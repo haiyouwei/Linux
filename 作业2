@@ -1,1 +1,127 @@
-创建文件
+1、创建文件、目录
+   touch/vim + 文件名
+   重定向
+   mkdir + 目录名
+   链接文件： ln -s <源文件/源目录> <目标文件/目标目录>
+2、vim编辑
+   i 光标前
+   a 光标后
+   o 光标下一行
+   Esc退出编辑模式
+   ：w 保存
+   ：q 退出
+   ：q! 强制退出
+   ：wq! 保存后强制退出
+   /字符串 文本查找 （n 下一个    N 上一个）
+   G 将光标移到最后一行
+   0 将光标移到行首
+   gg 将光标移到第一行
+   yy 文本复制
+   p 粘贴
+   yG 复制所有
+   nyy 从当前行开始复制n行
+3、删除文件
+   rm -f 文件  强制删除
+   rm -i 文件  删除前询问
+   rm -r 目录  递归删除
+4、查找文件
+   1.which + 命令  
+   （若有多个，需使用全路径执行）
+   2.find + 命令
+     -name 文件名
+     -type d(目录)|f（文件）|l（链接文件）
+     -ctime +3 三天前  -3 三天内
+     -atime
+     -mtime
+     -exec 命令 {} \;
+5、文本过滤
+   grep <关键字>
+   例，ls 文件 | grep <关键字> =====grep <关键字> 文件
+   grep -i 忽略大小写
+        -n 显示所在行
+        -v 反向查找
+6、文本排序
+   sort -n 按照数字大小排
+        -k1，1 按照列排，第1列
+        -u ===uniq去重
+        -t 指定分隔符
+7、文本去重
+   uniq -c 统计去重行数
+         -i 忽略大小写
+   一般先排序，再去重 sort 文件 | uniq
+8、文本统计
+   wc -l 文件  统计行数
+9、文件切割
+   split -l <n> 文件   把文件切割成每n行的小文件
+10、文件对比
+   1.diff 文件1 文件2     （< 表示文件1中有，文件2中没有；> 表示文件2中有，文件1中没有）
+   2.vim 文件1 文件2 -d 
+     Ctrl+w+方向键  页面切换
+11、创建用户(/etc/passwd)
+   useradd 用户名
+   useradd -g 组名  用户名 -g 指定用户组 
+   useradd -G 组名 用户名   -G
+           -d 指定主组
+           -m 创建家目录
+           -M 不创建家目录，但/etc/passwd 中会显示
+           -s <shell> 指定shell
+12、修改密码
+   passwd 用户名
+13、查看用户
+   id 用户名（uid：用户ID; gid:组ID）
+14、创建组
+   groupadd 组名
+15、用户删除
+   userdel 用户名
+16、用户切换
+   su - 用户
+17、文件的权限
+   rwx-w----
+    7  4  0
+18、修改文件权限
+   chomd u/g/o  +/-  r/w/x 文件 
+19、特殊权限：锁定/解锁文件
+   chattr +i 文件  锁定文件
+          -i 文件  解锁文件           
+20、usermod -G 组   修改附加组
+            -a   新加一个附加组
+21、创建一个用户组叫 cs2023
+    groupadd cs2023
+22、创建6个用户cs1 到 cs6，都分到一个班里(添加到上边这个组里)，同时班里分了三个学习小组 csg01 csg02 csg03, 每两个同学额外再参加一个学习小组
+    useradd -m cs{1，2，3，4，5，6} 
+    groupadd csg{01,02,03}
+    usermod -g cs2023 cs1  /2/3/4/5/6
+    usermod -g csg01 cs1  /2
+               csg02 cs3  /4
+               csg03 cs5  /6
+23、在cs1 用户的家目录创建一个目录 sysconfig
+    mkdir /home/cs1/sysconfig
+24、把 /etc/sysconfig 目录下的所有文件和目录复制一份到 cs1用户下的 sysconfig目录中，让我可以 ls /home/cs1/sysconfig/network
+     cp -r /etc/sysconfig/* /home/cs1/sysconfig/
+     ls /home/cs1/sysconfig/network
+25、使用root用户把我们刚才复制过来的内容里边的 /home/cs1/sysconfig/network-scripts/network-functions 文件 移动到 cs2 用户的家目录下
+    mv /home/cs1/sysconfig/network-scripts/network-functions-ipv6 /home/cs2/
+26、修改 cs1 和 cs2 两个用户的密码，分别使用两个用户登录系统。保持root，cs1 cs2 都登录到系统中
+    passwd cs1  /2
+    su - cs1  /2
+27、登录cs2用户后，把我们刚刚移动过去的 network-functions 文件 改名成 func.txt
+    mv network-functions-ipv6 func.txt
+28、编辑 func.txt ，搜索有 LANG 这个字符串的所有行，并把这些行的文件，都复制到到文件末尾。 如果无法编辑，请自行修改文件权限，让这个文件可以被cs2用户编辑
+    vim func.txt
+    若不能编辑，则
+                ls -l func.txt
+                logout
+                chmod u+w /home/cs2/func.txt
+    /LANG
+29、查找 func.txt 当前包含 LANG 字符串的行，并统计一下有多少行
+    cat func.txt | grep local | wc -l
+30、重新使用 cs1 用户登录系统，再自己的家目录下，创建一个文件 cs1.log，把 ls -l /etc /etc/errors 的所有输出内容全部导入到 cs1.log这个文件中。
+    su - cs1 
+    ls -l /etc /etc/errors &> cs1.log 
+31、修改cs6 这个用户的密码，并从root切换到 cs6 这个账号，想办法，让 cs6 这个用户可以cat 查看 刚才cs1 用户创建的哪个 cs1.log的文件。
+    cs6: passwd cs6
+    root:ls -l /home/cs1/ -d 
+         chmod o+x /home/cs1
+         ls -l /home/cs1/cs1.log
+         chmod o+r /home/cs1/cs1.log
+    cs6: cat /home/cs1/cs1.log
