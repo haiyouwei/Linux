@@ -1,0 +1,98 @@
+1、切换到/tmp目录下
+   cd /tmp 
+2、显示当前目录下的文件列表
+   ls 
+3、创建一个名为 test的目录
+   mkdir test 
+4、切换到test中
+   cd test 
+5、创建一个名为 example.txt 的新文件
+   touch example.txt 
+6、在文件中输入一行文本：Hello, Vim!
+   vim example.txt 
+   a
+   Hello, Vim!
+7、保存文件并退出 vim。
+   Esc 
+   :wq
+8、重新打开example.txt，插入行的一行内容，Hello,World!\
+   vim example.txt
+   o
+   Hello,World!
+9、将光标移动到第一行，复制从光标位置开始的2行内容
+   Esc   
+   1G
+   2yy
+10、将光标移动到文件的末尾，粘贴之前复制的文本，保存文件并退出
+   G
+   o
+   p
+11、查看文件大小信息
+   ls -lht 
+12、查看文件时间戳信息
+   ls -l 
+13、使用不同命令查看example.txt 文件内容
+   cat example.txt
+   vim example.txt
+14、查看example.txt 文件的第一行内容
+   head -1 example.txt
+15、查看example.txt 文件的最后一行内容
+   tail -1 example.txt
+18、创建目录test2并修改目录权限为777
+   mkdir test2 
+   chmod 777 test2 
+   ls -l test2 -d 
+19、创建普通用户nebula、natasha，并切换到nebula用户
+   useradd nebula
+   useradd natasha 
+   su - nebula 
+20、使用nebula在/tmp目录中创建一个文件nebula.file，将  ls -l  的结果重定向到nebula.file，退出nebula用户
+   touch nebula.file 
+   ls -l /tmp/nebula.file > /tmp/nebula.file
+   logout
+21、切换到natasha用户，在/tmp目录中创建一个文件natasha.file，将  ls -l /tmp  /tmpa 的所有结果重定向到natasha.file，退出natasha用户
+   su - natasha
+   touch /tmp/natasha.file 
+   ls -l /tmp /tmpa &> natasha.file 
+   logout
+22、修改nebula.file文件的权限，允许natasha用户可以编辑
+   chmod o+r /tmp/nebula.file 
+   chmod 0+w /tmp/nebula.file 
+23、使用natasha用户执行 ls -l 命令并将执行结果追加到nebula.file，退出natasha用户
+   su - natasha
+   ls -l > nebula.file 
+   logout
+24、复制/etc/init.d/functions文件到/tmp目录下
+   cp /etc/init.d/functions /tmp 
+25、修改/tmp目录下functions文件名为func
+   mv /tmp/functions /tmp/func 
+26、将/tmp 目录下的func文件中包含 system 的行单独保存到 /tmp/func-system.log
+   grep system /tmp/func 
+   
+
+   
+27、在26小题的基础上，统计包含 func文件包含 system 这个关键词的行有多少行
+   grep system /tmp/func | wc -l 
+28、将 /tmp/func-system.log 锁定，不要让任何人删除，包括root
+   chattr +i /tmp/func-system.log
+29、查找head命令的文件路径
+   which head 
+30、查找系统中所有文件名为file的文件列表
+   find / -name file
+31、查找系统中最近三天修改过的文件列表
+   find / -ctime -3
+32、使用nebula用户删除natasha.file是否可以删除掉？
+   不可以
+33、使用用户nebula在test2目录中创建文件nebula1
+   su - nebula
+   touch test2/nebula1
+34、使用用户natasha在test2目录中创建文件natasha1
+   logout
+   su - natasha
+   touch test2/natasha1 
+35、nebula用户是否可以编辑natasha1文件，为什么？
+36、nebula用户是否可以删除natasha1文件，为什么？
+   不可以；因为natasha1文件对其他用户没有可读可写权限 
+37、创建新文件 /tmp/iplist.txt 并将以下内容复制到文件内。统计这个文件内每个IP地址出现的次数，并能够由次数由小到大的顺序排列。
+   touch /tmp/iplist.txt 
+   uniq -c /tmp/iplist.txt | sort -n
