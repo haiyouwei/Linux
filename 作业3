@@ -67,10 +67,7 @@
 25、修改/tmp目录下functions文件名为func
    mv /tmp/functions /tmp/func 
 26、将/tmp 目录下的func文件中包含 system 的行单独保存到 /tmp/func-system.log
-   grep system /tmp/func 
-   
-
-   
+   grep system /tmp/func > /tmp/func-system.log 
 27、在26小题的基础上，统计包含 func文件包含 system 这个关键词的行有多少行
    grep system /tmp/func | wc -l 
 28、将 /tmp/func-system.log 锁定，不要让任何人删除，包括root
