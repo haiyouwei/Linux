@@ -1,0 +1,36 @@
+1、配置本地yum仓库  光驱挂载位置/media
+#mount /dev/sr0 /media
+  [base]
+  name=centos7
+  baserrl=file:///media
+  gpgcheck=0
+  enabled=1
+  gpgkey=file:///media
+#yum clean all 
+#yum makecach
+2、使用本地yum源仓库安装httpd
+yum install httpd
+如下图1
+3、源码安装的步骤有那些
+ ·检查环境、安装编译工具
+   #yum -y install gcc-c++
+ ·下载源码程序包
+   #wget https://...........
+ ·解压缩
+   #tar  -xzvf (.tar.gz)
+   #tar -xjvf (.tar.bz2)
+ ·编译源码生成可执行文件
+   #./(生成的可执行文件)  --prefix=/usr/local/文件名
+   报错#{yum -y install (缺啥补啥)-devel}
+ ·生成makefile
+   #make 
+   #make install
+ ·关闭防火墙
+   #iptables -F
+ ·测试
+   https://ip地址
+4、源码安装nginx并能启动访问（额外内容：修改主页，访问显示内容为自己的名字）
+   如下图2
+5、执行下面命令获取结果截图：
+rpm -q basesystem --qf '%{installtime:date}\n'|cut -d " " -f 2-6
+如下图3
