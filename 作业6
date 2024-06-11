@@ -1,0 +1,44 @@
+1、两台VM虚拟机，分别添加用户 nebula，配置两台服务器能使用nebula 用户做相互的无密码登录ssh 登录（即A主机上可以无密码使用nebula用户登录到B ， B也能使用nebula用户无密码登录到A）
+2、在其中一台VM上搭建rsync服务端，创建两个模块儿，用来管理两个目录（分别为/data/html  和 /data/database） .
+   安装rsync服务端： 首先，确保你的VM已经安装了rsync服务端软件。你可以通过包管理工具如yum或apt来安装rsync，具体命令如下：
+      sudo yum install rsync   # For CentOS/RHEL
+      sudo apt install rsync   # For Debian/Ubuntu
+      创建要同步的目录： 在VM上创建两个要管理的目录 /data/html 和 /data/database，可以使用以下命令创建这两个目录：
+      mkdir -p /data/htmlmkdir -p /data/database
+      配置rsync服务端：
+1.修改rsync配置文件 /etc/rsyncd.conf，添加以下内容来定义两个模块：
+   [html]path = /data/htmlcomment = Rsync module for html directory
+   read only = nolist = yes
+   [database]path = /data/databasecomment = Rsync module for database directory
+   read only = nolist = yes
+1.这里定义了两个模块 html 和 database，分别对应 /data/html 和 /data/database 目录。
+    启动rsync服务： 启动rsync服务并设置开机自启动：
+    sudo systemctl start rsync && sudo systemctl enable rsync
+    设置防火墙规则： 如果有防火墙，需要添加相应的规则来允许rsync服务的通信，例如允许TCP端口873：
+     sudo firewall-cmd --add-port=873/tcp --permanent
+     sudo firewall-cmd --reload
+    测试rsync服务： 可以使用rsync命令来测试连接rsync服务端是否正常，例如：
+     rsync rsync://your_vm_ip_address/html
+     rsync rsync://your_vm_ip_address/database
+现在，你已经在VM上搭建了rsync服务端，并创建了两个模块来管理两个目录 /data/html 和 /data/database。其他机器可以通过rsync客户端连接到这两个模块，并实现文件同步的功能。
+-------------------------------------------------------------------------------------------------------------------------------------------------
+要求1：/data/html 这个模块使用root用户管理，  /data/database  这个模块需要使用nebula用户管理
+要求2： rsync需要限制只能允许另外一台VM这唯一的一台主机能够访问，其他主机都需要拒绝
+要求3：分别创建两个rsync的客户端用户，使用密码认证，用于向这两个模块中上传文件，上传目录， 下载文件。但不允许这两个rsync的客户端用户对这两个目录的文件进行删除。
+
+3、修改系统的最大pid限制到 102400，修改系统最大文件描述限制到 655360
+/etc/security/limits.conf
+4、以上服务搭建的过程中，需要每一步去查看进程是否存在、该进程的limits 信息、端口、进程打开的 文件描述符
+  Ps -aux | grep 程序
+  Lsof -i : 端口
+  Netstat -anplt | grep 端口
+
+5、假设，注意是假设 你在 1 中发现从服务器A 登录服务器B 的过程中，登录过程如果非常的卡，非常的 卡，要卡很久偶尔可以登录上，大部分时间都因为卡的时间太久了，服务器A等不及超时。那请你分析一 下可能有哪些原因。
+    网络问题：可能存在网络延迟或者网络拥塞，导致数据传输速度变慢。这可能是由于网络连接不稳定、带宽不足或者网络设备故障引起的。
+    服务器负载过重：服务器B 可能正在处理大量请求，导致响应速度变慢。这可能是由于服务器资源不足、过多的并发请求或者应用程序性能问题引起的。
+    数据库查询效率低：如果登录过程涉及数据库查询，可能存在查询效率低下的问题。这可能是由于数据库索引不足、查询语句复杂或者数据库性能不佳引起的。
+    安全策略限制：服务器B 可能设置了严格的安全策略，导致登录过程需要进行复杂的验证或者授权操作，从而增加了登录时间。
+    软件或配置问题：可能存在软件版本不匹配、配置错误或者其他系统问题，导致登录过程出现异常。
+如果一直登录不上，又可能有哪些原因
+提示1：按照我交给大家的套路，按照自己的理解，整理成自己的笔记，最后把你整理的笔记分享给我， 或者直接粘贴到作业中。
+提示2：从网络 , 端口，还有服务器上进程/服务器资源【pid/fd/cpu/磁盘等等】。注意整理cpu的 us sy wait  idlesi 等CPU消耗
